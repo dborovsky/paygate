@@ -6,9 +6,9 @@ services:
       POSTGRES_PASSWORD: paygate
       POSTGRES_DB: paygate
     ports:
-      - "5432:5432"            # хост:контейнер
+      - "5432:5432"            # host:container
     volumes:
-      - pgdata:/var/lib/postgresql/data   # данные переживут перезапуск
+      - pgdata:/var/lib/postgresql/data   # data survives container restarts
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U paygate -d paygate"]
       interval: 5s
@@ -30,21 +30,21 @@ services:
     ports:
       - "9092:9092"
     environment:
-      # KRaft: один узел — одновременно broker и controller, ZooKeeper не нужен
+      # KRaft: one node is both broker and controller, no ZooKeeper needed
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
-      # Два "входа" (listener) в Kafka:
-      #   PLAINTEXT_HOST :9092 — для нашего Go-кода на Mac (localhost)
-      #   PLAINTEXT      :29092 — для других контейнеров внутри compose (kafka:29092)
+      # Two listeners, because Kafka tells clients which address to use next:
+      #   PLAINTEXT_HOST :9092  — for our Go code on the host (localhost:9092)
+      #   PLAINTEXT      :29092 — for other containers in this compose network (kafka:29092)
       KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092,CONTROLLER://:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
 
-      # Один broker → репликация внутренних топиков = 1
+      # Single broker → internal topics can only have replication factor 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
