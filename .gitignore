@@ -1,0 +1,14 @@
+# personal notes (plan, cheat sheets) — not part of the project
+/notes/
+
+# binaries
+/bin/
+
+# env files with secrets
+.env
+.env.*
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
