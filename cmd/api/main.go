@@ -27,7 +27,7 @@ func main() {
 func run(logger *slog.Logger) error {
 	cfg, err := config.Load()
 	if err != nil {
-		return fmt.Errorf("load config", "error", err)
+		return fmt.Errorf("load config: %w", err)
 	}
 
 	logger.Info("config loaded", "addr", cfg.HTTPAddr, "shutdown_timeout", cfg.ShutdownTimeout)
