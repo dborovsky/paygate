@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/dborovsky/paygate/internal/config"
+	"github.com/dborovsky/paygate/internal/merchant"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -55,6 +56,10 @@ func run(logger *slog.Logger) error {
 	logger.Info("Connected to postgres")
 
 	mux := http.NewServeMux()
+
+	merchantRepo := merchant.NewRepository(pool)
+	merchantHandler := merchant.NewHandler(merchantRepo, logger)
+	mux.HandleFunc("POST /merchants", merchantHandler.Create)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
