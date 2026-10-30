@@ -82,3 +82,20 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"error": msg})
 }
+
+type meResponse struct {
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func (h *Handler) Me(w http.ResponseWriter, r *http.Request) {
+	m, ok := FromContext(r.Context())
+	if ok == false {
+		h.logger.Error("merchant missing in context")
+		writeError(w, http.StatusInternalServerError, "internal error")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, meResponse{ID: m.ID, Name: m.Name, CreatedAt: m.CreatedAt})
+}

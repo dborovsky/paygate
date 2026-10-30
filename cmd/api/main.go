@@ -60,6 +60,7 @@ func run(logger *slog.Logger) error {
 	merchantRepo := merchant.NewRepository(pool)
 	merchantHandler := merchant.NewHandler(merchantRepo, logger)
 	mux.HandleFunc("POST /merchants", merchantHandler.Create)
+	mux.Handle("GET /me", merchantHandler.RequireAPIKey(http.HandlerFunc(merchantHandler.Me)))
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
