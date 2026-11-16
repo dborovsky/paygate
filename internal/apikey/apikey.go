@@ -27,10 +27,8 @@ func Generate() (key, prefix string, hash []byte, err error) {
 	// prefix = the first prefixLen characters of the key (use slicing: key[:prefixLen]).
 	prefix = key[:prefixLen]
 
-	// hash = Hash(key)
 	hash = Hash(key)
 
-	// return key, prefix, hash, nil
 	return key, prefix, hash, nil
 }
 
